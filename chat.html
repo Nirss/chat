@@ -10,8 +10,8 @@
 <body>
 <button id="connect">Connect</button>
 <button id="disconnect">Disconnect</button>
-<button id="send">Send</button>
 <input id="text">
+<button id="send">Send</button>
 <br/>
 <table style="max-height: 70vh;overflow-y: scroll;">
     <tbody id="chat">
@@ -37,7 +37,7 @@
             chat.appendChild(row)
         }
 
-        connectBtn.onclick = function (e) {
+        connectBtn.onclick = function () {
             if (ws) {
                 return false
             }
@@ -48,17 +48,19 @@
             ws.onmessage = function (event) {
                 let data = JSON.parse(event.data)
                 print(data.Text)
+                textBtn.value = '';
             }
         }
 
-        sendBtn.onclick = function (e) {
-            if (!ws) {
+        sendBtn.onclick = function () {
+            if (!ws || textBtn.value === '') {
                 return false
             }
-            ws.send(JSON.stringify({text: textBtn.value}))
+            let data = {text: textBtn.value}
+            ws.send(JSON.stringify(data))
         }
 
-        disconnectBtn.onclick = function (e) {
+        disconnectBtn.onclick = function () {
             if (!ws) {
                 return false
             }
