@@ -12,9 +12,7 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-type Message struct {
-	Text string
-}
+var hub Hub
 
 func chat(w http.ResponseWriter, r *http.Request) {
 	c, err := upgrader.Upgrade(w, r, nil)
@@ -22,22 +20,8 @@ func chat(w http.ResponseWriter, r *http.Request) {
 		log.Println("Upgrade: ", err)
 		return
 	}
-	defer c.Close()
-
-	var m Message
-	for {
-		c.ReadJSON(&m)
-		if err != nil {
-			println("ReadJson:", err)
-			continue
-		}
-		err = c.WriteJSON(m)
-
-		if err != nil {
-			println("ReadJson:", err)
-			continue
-		}
-	}
+	nickname := r.URL.Query().Get("nickname")
+	hub.ConnectClient(c, nickname)
 }
 
 func main() {
