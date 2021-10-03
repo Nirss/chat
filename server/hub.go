@@ -1,6 +1,7 @@
-package main
+package server
 
 import (
+	"github.com/Nirss/chat/common"
 	"github.com/gorilla/websocket"
 	"log"
 	"time"
@@ -27,7 +28,7 @@ func (h *Hub) read(c *Client) {
 		if mt == websocket.BinaryMessage {
 			continue
 		}
-		msg := Message{
+		msg := common.Message{
 			Time:     time.Now(),
 			Message:  string(data),
 			Nickname: c.nickname,
@@ -36,7 +37,7 @@ func (h *Hub) read(c *Client) {
 	}
 }
 
-func (h *Hub) Broadcast(msg Message) {
+func (h *Hub) Broadcast(msg common.Message) {
 	for i := range h.clients {
 		h.clients[i].SendMessage(msg)
 	}

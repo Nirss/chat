@@ -1,30 +1,21 @@
 package main
 
 import (
-	"github.com/gorilla/websocket"
-	"log"
+	"github.com/Nirss/chat/server"
+	"github.com/Nirss/chat/web/components"
+	"github.com/maxence-charriere/go-app/v9/pkg/app"
 	"net/http"
 )
 
-var upgrader = websocket.Upgrader{
-	CheckOrigin: func(r *http.Request) bool {
-		return true
-	},
-}
-
-var hub Hub
-
-func chat(w http.ResponseWriter, r *http.Request) {
-	c, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Println("Upgrade: ", err)
-		return
-	}
-	nickname := r.URL.Query().Get("nickname")
-	hub.ConnectClient(c, nickname)
-}
-
 func main() {
-	http.HandleFunc("/chat", chat)
+	app.Route("/", &components.Chat{})
+	app.RunWhenOnBrowser()
+
+	http.Handle("/", &app.Handler{
+		Styles: []string{
+			"https://unpkg.com/spectre.css/dist/spectre.min.css",
+		},
+	})
+	http.HandleFunc("/chat", server.Chat)
 	http.ListenAndServe(":8080", nil)
 }
